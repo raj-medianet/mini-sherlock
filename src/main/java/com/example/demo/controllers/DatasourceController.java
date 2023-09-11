@@ -4,47 +4,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.exception.DatasourceNotFoundException;
 import com.example.demo.models.Datasource;
-import com.example.demo.models.konomResponse.KonomResponse;
-import com.example.demo.monitorService.MonitorKonom;
 import com.example.demo.services.DatasourceService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class DatasourceController {
 
 	private final DatasourceService datasourceService;
-	@Autowired
-	private final MonitorKonom monitorKonom;
 
 	@Autowired
-	public DatasourceController(DatasourceService datasourceService,
-			MonitorKonom monitorKonom) {
+	public DatasourceController(DatasourceService datasourceService) {
 		this.datasourceService = datasourceService;
-		this.monitorKonom = monitorKonom;
+	}
+	
+	@GetMapping("/datasources/{datasourceName}")
+	public ResponseEntity<Datasource> getDatasource(@PathVariable String datasourceName) throws DatasourceNotFoundException{
+		Datasource datasource = datasourceService.getDatasource(datasourceName);
+		return new ResponseEntity<>(datasource, HttpStatus.OK);
 	}
 
 	@PostMapping("/datasources")
-	public ResponseEntity<Datasource> addDatasource(@RequestBody Datasource datasource) {
-		datasourceService.addDatasource(datasource);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<Datasource> addDatasource(@RequestBody @Valid Datasource datasource) {
+		Datasource savedDatasource = datasourceService.addDatasource(datasource);
+		return new ResponseEntity<>(savedDatasource, HttpStatus.CREATED);
 	}
 
 	@DeleteMapping("/datasources/{datasourceName}")
-	public void deleteDatasource(@PathVariable String datasourceName) {
+	public void deleteDatasource(@PathVariable String datasourceName) throws DatasourceNotFoundException{
 		datasourceService.deleteDatasource(datasourceName);
-	}
-
-	@PostMapping("/datasources/{datasourceName}/monitor")
-	public KonomResponse monitorDatasource(@PathVariable String datasourceName, @RequestParam String startTime,
-			@RequestParam String endTime, @RequestParam String granularity) {
-		Datasource datasource = datasourceService.getDatasource(datasourceName);
-		return monitorKonom.monitorDatasource(datasource, startTime, endTime, granularity);
 	}
 
 }
