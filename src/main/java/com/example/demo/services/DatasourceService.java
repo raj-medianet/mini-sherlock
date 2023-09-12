@@ -13,22 +13,22 @@ public class DatasourceService {
 	@Autowired
 	DatasourceRepository datasourceRepository;
 
-	public Datasource getDatasource(String datasourceName) throws DatasourceNotFoundException{
+	public Datasource getDatasource(String datasourceName) throws DatasourceNotFoundException {
 		Datasource datasource = datasourceRepository.findById(datasourceName).orElse(null);
-		if(datasource!=null)
+		if (datasource != null)
 			return datasource;
 		else
-			throw new DatasourceNotFoundException("Datasource not found: "+datasourceName);
+			throw new DatasourceNotFoundException("Datasource not found: " + datasourceName);
 	}
 
 	public Datasource addDatasource(Datasource datasource) {
 		return datasourceRepository.save(datasource);
 	}
 
-	public boolean deleteDatasource(String datasourceName) throws DatasourceNotFoundException{
+	public boolean deleteDatasource(String datasourceName) throws DatasourceNotFoundException {
 		Datasource datasource = datasourceRepository.findById(datasourceName).orElse(null);
 		if (datasource == null)
-			throw new DatasourceNotFoundException("Datasource not found: "+datasourceName);
+			throw new DatasourceNotFoundException("Datasource not found: " + datasourceName);
 		else
 			datasourceRepository.delete(datasource);
 		return true;

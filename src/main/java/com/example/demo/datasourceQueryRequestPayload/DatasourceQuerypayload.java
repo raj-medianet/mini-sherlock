@@ -18,9 +18,10 @@ public abstract class DatasourceQuerypayload {
 
 	public abstract String generatePayload();
 
-	void getTimeFrame(long granularity) {
+	void getTimeFrame(long granularityInMins) {
 
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		long granularity = granularityInMins*60000;
 
 		Date currentTime = new Date();
 		Date roughStartDate = new Date(currentTime.getTime() - granularity);
@@ -41,11 +42,12 @@ public abstract class DatasourceQuerypayload {
 		calendar.set(Calendar.SECOND, 0);
 
 		startTime = simpleDateFormat.format(calendar.getTime());
-		endTime = simpleDateFormat.format(new Date());
+		
+		endTime = simpleDateFormat.format(calendar.getTimeInMillis()+granularity);
 
 	}
-	
-	// custom timeframe
+
+	// hardcoded timeframe
 //	void getTimeFrame(long granularity) {
 //		startTime = "2023-08-28 06:00:00";
 //		endTime = "2023-08-28 06:30:00";

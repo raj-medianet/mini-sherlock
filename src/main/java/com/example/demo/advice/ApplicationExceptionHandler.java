@@ -9,34 +9,53 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.example.demo.exception.DatasourceNotFoundException;
+
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(DatasourceNotFoundException.class)
-	public Map<String, String> handleDatasourceNotFoundException(DatasourceNotFoundException e){
-		Map<String,String> errorMap = new HashMap<>();
+	public Map<String, String> handleDatasourceNotFoundException(DatasourceNotFoundException e) {
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("error_message", e.getMessage());
+		return errorMap;
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public Map<String, String> handleMissingRequestParamException(MissingServletRequestParameterException e) {
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("error_message", "query parameter is missing: " + e.getParameterName());
+		return errorMap;
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MissingRequestHeaderException.class)
+	public Map<String, String> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("error_message", "Request Header is missing: " + e.getHeaderName());
+		return errorMap;
+	}
+	
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(ResourceAccessException.class)
+	public Map<String, String> handleResourceAccessException(ResourceAccessException e) {
+		Map<String, String> errorMap = new HashMap<>();
 		errorMap.put("error_message", e.getMessage());
 		return errorMap;
 	}
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MissingServletRequestParameterException.class)
-	public Map<String, String> handleMissingRequestParamException(MissingServletRequestParameterException e){
-		Map<String,String> errorMap = new HashMap<>();
-		errorMap.put("error_message", "query parameter is missing: "+e.getParameterName());
+	@ExceptionHandler(ConstraintViolationException.class)
+	public Map<String, String> handleConstraintViolationException(ConstraintViolationException e){
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("error_message", e.getMessage());
 		return errorMap;
 	}
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MissingRequestHeaderException.class)
-	public Map<String, String> handleMissingRequestHeaderException(MissingRequestHeaderException e){
-		Map<String,String> errorMap = new HashMap<>();
-		errorMap.put("error_message", "Request Header is missing: "+e.getHeaderName());
-		return errorMap;
-	}
-	
+
 }

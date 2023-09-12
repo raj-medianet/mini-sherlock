@@ -25,9 +25,10 @@ public class DatasourceController {
 	public DatasourceController(DatasourceService datasourceService) {
 		this.datasourceService = datasourceService;
 	}
-	
+
 	@GetMapping("/datasources/{datasourceName}")
-	public ResponseEntity<Datasource> getDatasource(@PathVariable String datasourceName) throws DatasourceNotFoundException{
+	public ResponseEntity<Datasource> getDatasource(@PathVariable String datasourceName)
+			throws DatasourceNotFoundException {
 		Datasource datasource = datasourceService.getDatasource(datasourceName);
 		return new ResponseEntity<>(datasource, HttpStatus.OK);
 	}
@@ -39,7 +40,7 @@ public class DatasourceController {
 	}
 
 	@DeleteMapping("/datasources/{datasourceName}")
-	public void deleteDatasource(@PathVariable String datasourceName) throws DatasourceNotFoundException{
+	public void deleteDatasource(@PathVariable String datasourceName) throws DatasourceNotFoundException {
 		datasourceService.deleteDatasource(datasourceName);
 	}
 
